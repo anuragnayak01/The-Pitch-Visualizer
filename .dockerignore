@@ -1,0 +1,21 @@
+# Python bytecode — prevents stale .pyc files from shadowing updated source
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables — never bake secrets into the image
+.env
+.env.*
+
+# Git history — not needed in container
+.git
+.gitignore
+
+# Local outputs folder
+outputs/
+
+# Editor/OS junk
+.DS_Store
+.vscode/
+*.swp

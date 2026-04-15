@@ -31,6 +31,10 @@ RUN uvicorn --version
 # Copy application code
 COPY . .
 
+# Remove any stale bytecode that could shadow updated source files
+RUN find /app -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+RUN find /app -name "*.pyc" -delete 2>/dev/null || true
+
 # Create outputs directory
 RUN mkdir -p outputs
 
