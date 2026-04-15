@@ -20,7 +20,6 @@ RUN pip install \
     jinja2==3.1.4 \
     python-multipart==0.0.9 \
     aiofiles==24.1.0 \
-    anthropic==0.34.2 \
     spacy==3.7.6
 
 # Download spaCy model
