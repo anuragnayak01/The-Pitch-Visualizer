@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Storyboard — Pitch Visualizer</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .panel-card { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <header class="site-header no-print">
+            <div class="header-inner">
+                <div class="logo">
+                    <span class="logo-icon">🎬</span>
+                    <span class="logo-text">Pitch<strong>Visualizer</strong></span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Actions -->
+            <div class="top-actions no-print">
+                <a href="/" class="btn-secondary">← New Storyboard</a>
+                <button onclick="window.print()" class="btn-secondary">🖨️ Print / Save PDF</button>
+            </div>
+
+            <!-- Storyboard Title -->
+            <div class="storyboard-header">
+                <h2 class="storyboard-title">📽️ Your Storyboard</h2>
+                <div class="meta-row">
+                    <span class="meta-badge">{{ panels|length }} Panels</span>
+                    <span class="meta-badge style-badge">🎨 {{ style | replace('_', ' ') | title }}</span>
+                </div>
+            </div>
+
+            <!-- Narrative Preview -->
+            <div class="narrative-preview no-print">
+                <strong>Original Narrative:</strong> {{ narrative }}
+            </div>
+
+            <!-- Panels Grid -->
+            <div class="panels-grid">
+                {% for panel in panels %}
+                <div class="panel-card" data-panel="{{ panel.index }}">
+                    <div class="panel-header">
+                        <span class="panel-number">Panel {{ panel.index }}</span>
+                    </div>
+                    <div class="panel-image-wrap">
+                        {% if panel.image_url %}
+                        <img
+                            src="{{ panel.image_url }}"
+                            alt="Scene {{ panel.index }}"
+                            class="panel-image"
+                            loading="lazy"
+                        />
+                        {% else %}
+                        <div class="panel-placeholder">
+                            <span>🖼️</span>
+                            <p>Image generation failed</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="panel-caption">
+                        <p class="caption-text">{{ panel.scene_text }}</p>
+                    </div>
+                    <details class="prompt-details no-print">
+                        <summary>View engineered prompt</summary>
+                        <p class="prompt-text">{{ panel.engineered_prompt }}</p>
+                    </details>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="bottom-actions no-print">
+                <a href="/" class="btn-secondary">← Create Another</a>
+                <button onclick="window.print()" class="btn-primary">🖨️ Export as PDF</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

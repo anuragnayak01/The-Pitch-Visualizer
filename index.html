@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Pitch Visualizer</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- ── HEADER ── -->
+        <header class="site-header">
+            <div class="header-inner">
+                <div class="logo">
+                    <span class="logo-icon">🎬</span>
+                    <span class="logo-text">Pitch<strong>Visualizer</strong></span>
+                </div>
+                <p class="tagline">Transform narrative text into visual storyboards instantly</p>
+            </div>
+        </header>
+
+        <!-- ── MAIN FORM ── -->
+        <main class="main-content">
+            <div class="card form-card">
+                <h2 class="card-title">Create Your Storyboard</h2>
+                <p class="card-subtitle">
+                    Paste 3–5 sentences of narrative text and choose a visual style.
+                    Our AI pipeline will segment, engineer vivid prompts, and generate
+                    a multi-panel storyboard for you.
+                </p>
+
+                <form id="visualizer-form" action="/generate-stream-page" method="post">
+                    <!-- Narrative Input -->
+                    <div class="form-group">
+                        <label for="narrative" class="form-label">Your Narrative</label>
+                        <textarea
+                            id="narrative"
+                            name="narrative"
+                            class="form-textarea"
+                            rows="6"
+                            placeholder="Example: A small retail company was struggling with inventory chaos. They adopted our AI platform and within two weeks, stockouts dropped by 40%. The team celebrated their first perfect quarter, with zero overstocking. Now they're expanding to three new locations, powered by data they finally trust."
+                            required
+                        ></textarea>
+                        <span class="form-hint">Recommended: 3–5 sentences for best results</span>
+                    </div>
+
+                    <!-- Style Selector -->
+                    <div class="form-group">
+                        <label class="form-label">Visual Style</label>
+                        <div class="style-grid">
+                            {% set style_icons = {
+                                'digital_art': '🎨',
+                                'cinematic': '🎬',
+                                'watercolor': '🖌️',
+                                'comic': '💥',
+                                'photorealistic': '📸'
+                            } %}
+                            {% set style_names = {
+                                'digital_art': 'Digital Art',
+                                'cinematic': 'Cinematic',
+                                'watercolor': 'Watercolor',
+                                'comic': 'Comic Book',
+                                'photorealistic': 'Photorealistic'
+                            } %}
+                            {% for style_key in styles.keys() %}
+                            <label class="style-card {% if loop.first %}selected{% endif %}" data-style="{{ style_key }}">
+                                <input
+                                    type="radio"
+                                    name="style"
+                                    value="{{ style_key }}"
+                                    {% if loop.first %}checked{% endif %}
+                                />
+                                <span class="style-icon">{{ style_icons.get(style_key, '🎨') }}</span>
+                                <span class="style-name">{{ style_names.get(style_key, style_key) }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Mode Selector -->
+                    <div class="form-group mode-group">
+                        <label class="form-label">Generation Mode</label>
+                        <div class="mode-toggle">
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="stream" checked />
+                                <span>⚡ Live Streaming <small>(panels appear one-by-one)</small></span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="batch" />
+                                <span>📦 Batch <small>(all panels at once)</small></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-generate" id="submit-btn">
+                        <span class="btn-icon">✨</span>
+                        <span class="btn-text">Generate Storyboard</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ── LIVE STORYBOARD AREA (populated by SSE) ── -->
+            <div id="storyboard-area" class="storyboard-area hidden">
+                <div class="storyboard-header">
+                    <h2 class="storyboard-title">📽️ Your Storyboard</h2>
+                    <div id="progress-bar-wrap" class="progress-wrap">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                    <p id="status-msg" class="status-msg">Initialising pipeline…</p>
+                </div>
+                <div id="panels-container" class="panels-grid"></div>
+                <div id="complete-actions" class="complete-actions hidden">
+                    <button onclick="window.print()" class="btn-secondary">🖨️ Print / Save PDF</button>
+                    <button onclick="location.reload()" class="btn-secondary">🔄 New Storyboard</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- ── HOW IT WORKS ── -->
+        <section class="how-it-works">
+            <h3>How It Works</h3>
+            <div class="steps-row">
+                <div class="step">
+                    <span class="step-num">1</span>
+                    <strong>Segment</strong>
+                    <p>spaCy splits your text into logical scenes</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <span class="step-num">2</span>
+                    <strong>Anchor</strong>
+                    <p>LLM extracts style, character & setting anchors</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <span class="step-num">3</span>
+                    <strong>Engineer</strong>
+                    <p>3-call strategy builds vivid visual prompts</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <span class="step-num">4</span>
+                    <strong>Generate</strong>
+                    <p>AI creates images with consistent style</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <p>Powered by Claude · Pollinations.ai · spaCy · FastAPI</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
