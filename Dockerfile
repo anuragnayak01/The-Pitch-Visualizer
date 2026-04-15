@@ -11,15 +11,23 @@ RUN apt-get update && apt-get install -y \
 # Upgrade pip first
 RUN pip install --upgrade pip
 
-# Install spaCy explicitly BEFORE requirements.txt
-RUN pip install spacy==3.7.6
+# Install ALL dependencies explicitly (don't rely solely on requirements.txt)
+RUN pip install \
+    fastapi==0.115.0 \
+    "uvicorn[standard]==0.30.6" \
+    httpx==0.27.2 \
+    python-dotenv==1.0.1 \
+    jinja2==3.1.4 \
+    python-multipart==0.0.9 \
+    aiofiles==24.1.0 \
+    anthropic==0.34.2 \
+    spacy==3.7.6
 
 # Download spaCy model
 RUN python -m spacy download en_core_web_sm
 
-# Install remaining dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Verify uvicorn is installed
+RUN uvicorn --version
 
 # Copy application code
 COPY . .
